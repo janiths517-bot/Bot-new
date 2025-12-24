@@ -1128,6 +1128,214 @@ case 'bot_stats': {
 
     break;
 }
+					case 'ytv': {
+  try {
+    if (!args || args.length === 0) {
+      return await socket.sendMessage(m.chat, {
+        text: "❌ Please provide a YouTube video URL!\nExample: .ytv https://www.youtube.com/watch?v=XXXXXXXXX"
+      }, { quoted: m });
+    }
+
+    const url = args[0];
+    await socket.sendMessage(m.chat, { text: "📥 Downloading YouTube video..." }, { quoted: m });
+
+    // Replace with your actual YouTube video download function
+    const ytvResult = await downloadYouTubeVideo(url); // { videoUrl, title, thumbnail }
+
+    if (!ytvResult) {
+      return await socket.sendMessage(m.chat, { text: "❌ Failed to download YouTube video!" }, { quoted: m });
+    }
+
+    const ytvButtons = [
+      {
+        buttonId: `${config.PREFIX}ytv ${url}`,
+        buttonText: { displayText: "📹 Download Video" },
+        type: 1
+      },
+      {
+        buttonId: `${config.PREFIX}yta ${url}`,
+        buttonText: { displayText: "🎧 Download Audio" },
+        type: 1
+      },
+      {
+        buttonId: `${config.PREFIX}menu`,
+        buttonText: { displayText: "📂 MENU" },
+        type: 1
+      }
+    ];
+
+    await socket.sendMessage(m.chat, {
+      image: { url: ytvResult.thumbnail },
+      caption: `📥 *YouTube Video*\n\nTitle: ${ytvResult.title}\nURL: ${url}`,
+      footer: "© RAVIYA MD",
+      buttons: ytvButtons,
+      headerType: 4
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("YouTube Video error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to download YouTube video!" }, { quoted: m });
+  }
+  break;
+		}
+					case 'sticker':
+case 's': {
+  try {
+    // Check if the user sent media
+    if (!m.quoted || (!m.quoted.image && !m.quoted.video)) {
+      return await socket.sendMessage(m.chat, { 
+        text: "❌ Please reply to an image or short video to convert it into a sticker!" 
+      }, { quoted: m });
+    }
+
+    const media = m.quoted;
+
+    // Download media buffer
+    const stream = await socket.downloadMediaMessage(media);
+    
+    // Convert media to sticker (you can use your sticker creation function)
+    const stickerBuffer = await createSticker(stream, {
+      packname: "RAVIYA MD",
+      author: "WhatsApp Bot"
+    });
+
+    await socket.sendMessage(m.chat, {
+      sticker: stickerBuffer
+    }, { quoted: m });
+
+    await socket.sendMessage(m.chat, { 
+      text: "✅ Sticker created successfully!" 
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("Sticker error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to create sticker!" }, { quoted: m });
+  }
+  break;
+		  }
+					case 'toimg': {
+  try {
+    if (!m.quoted || !m.quoted.sticker) {
+      return await socket.sendMessage(m.chat, { 
+        text: "❌ Please reply to a sticker to convert it into an image!" 
+      }, { quoted: m });
+    }
+
+    const sticker = m.quoted;
+
+    // Download sticker buffer
+    const stickerBuffer = await socket.downloadMediaMessage(sticker);
+
+    // Convert sticker to image (PNG)
+    const imageBuffer = await stickerToImage(stickerBuffer); // Use your sticker-to-image function
+
+    await socket.sendMessage(m.chat, {
+      image: imageBuffer,
+      caption: "✅ Sticker converted to image successfully!"
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("ToImg error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to convert sticker to image!" }, { quoted: m });
+  }
+  breaik;
+  }
+					case 'tomp3': {
+  try {
+    if (!m.quoted || (!m.quoted.video && !m.quoted.audio)) {
+      return await socket.sendMessage(m.chat, { 
+        text: "❌ Please reply to a video or audio to convert it into MP3!" 
+      }, { quoted: m });
+    }
+
+    const media = m.quoted;
+
+    // Download media buffer
+    const mediaBuffer = await socket.downloadMediaMessage(media);
+
+    // Convert media to MP3 (use your own converter function)
+    const mp3Buffer = await convertToMP3(mediaBuffer); // e.g., ffmpeg conversion
+
+    await socket.sendMessage(m.chat, {
+      audio: mp3Buffer,
+      mimetype: 'audio/mpeg',
+      ptt: false,
+      caption: "✅ Converted to MP3 successfully!"
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("ToMP3 error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to convert media to MP3!" }, { quoted: m });
+  }
+  break;
+			}
+					case 'getpp': {
+  try {
+    let target = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.sender;
+
+    await socket.sendMessage(m.chat, { text: "📥 Fetching profile picture..." }, { quoted: m });
+
+    // Get profile picture URL
+    const ppUrl = await socket.profilePictureUrl(target, 'image').catch(() => 'https://i.ibb.co/0jqHpnp/No-Image.png');
+
+    const ppButtons = [
+      {
+        buttonId: `${config.PREFIX}menu`,
+        buttonText: { displayText: "📂 MENU" },
+        type: 1
+      },
+      {
+        buttonId: `${config.PREFIX}alive`,
+        buttonText: { displayText: "🟢 ALIVE" },
+        type: 1
+      }
+    ];
+
+    await socket.sendMessage(m.chat, {
+      image: { url: ppUrl },
+      caption: `📸 Profile Picture of @${target.split("@")[0]}`,
+      footer: "© RAVIYA MD",
+      buttons: ppButtons,
+      mentions: [target],
+      headerType: 4
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("GetPP error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to fetch profile picture!" }, { quoted: m });
+  }
+  break;
+		}
+					case 'viewonce': {
+  try {
+    if (!m.quoted || !m.quoted.viewOnce) {
+      return await socket.sendMessage(m.chat, { 
+        text: "❌ Please reply to a view-once message (image/video)!" 
+      }, { quoted: m });
+    }
+
+    // Download the view-once media
+    const mediaBuffer = await socket.downloadMediaMessage(m.quoted);
+
+    await socket.sendMessage(m.chat, {
+      caption: "✅ View-once message saved!",
+      image: m.quoted.mtype === 'image' ? mediaBuffer : undefined,
+      video: m.quoted.mtype === 'video' ? mediaBuffer : undefined,
+      mimetype: m.quoted.mimetype || undefined,
+      buttons: [
+        { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📂 MENU" }, type: 1 },
+        { buttonId: `${config.PREFIX}alive`, buttonText: { displayText: "🟢 ALIVE" }, type: 1 }
+      ],
+      footer: "© RAVIYA MD",
+      headerType: 4
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("ViewOnce error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to save view-once message!" }, { quoted: m });
+  }
+  break;
+					 }
 					case 'song': {
   try {
     if (!args || args.length === 0) {
@@ -1272,6 +1480,592 @@ case 'bot_stats': {
     await socket.sendMessage(m.chat, { text: "❌ Failed to download Facebook video!" }, { quoted: m });
   }
   break;
+					}
+					case 'ig': {
+  try {
+    if (!args || args.length === 0) {
+      return await socket.sendMessage(m.chat, {
+        text: "❌ Please provide an Instagram post/reel URL!\nExample: .ig https://www.instagram.com/p/XXXXXXXXX/"
+      }, { quoted: m });
+    }
+
+    const url = args[0];
+    await socket.sendMessage(m.chat, { text: "📥 Downloading Instagram media..." }, { quoted: m });
+
+    // Replace with your actual Instagram download function
+    const igResult = await downloadInstagramMedia(url); // { mediaUrl, thumbnail, title, type }
+
+    if (!igResult) {
+      return await socket.sendMessage(m.chat, { text: "❌ Failed to download Instagram media!" }, { quoted: m });
+    }
+
+    const igButtons = [
+      {
+        buttonId: `${config.PREFIX}igvideo ${url}`,
+        buttonText: { displayText: igResult.type === 'video' ? "📹 Download Video" : "📸 Download Image" },
+        type: 1
+      },
+      {
+        buttonId: `${config.PREFIX}menu`,
+        buttonText: { displayText: "📂 MENU" },
+        type: 1
+      }
+    ];
+
+    await socket.sendMessage(m.chat, {
+      image: { url: igResult.thumbnail },
+      caption: `📥 *Instagram Media*\n\nTitle: ${igResult.title || "No title"}\nURL: ${url}`,
+      footer: "© RAVIYA MD",
+      buttons: igButtons,
+      headerType: 4
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("Instagram error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to download Instagram media!" }, { quoted: m });
+  }
+  break;
+		}
+					case 'ai': {
+  try {
+    if (!args || args.length === 0) {
+      return await socket.sendMessage(m.chat, {
+        text: "❌ Please provide a message to send to AI!\nExample: .ai Hello, how are you?"
+      }, { quoted: m });
+    }
+
+    const userMessage = args.join(" ");
+    await socket.sendMessage(m.chat, { text: "🤖 Thinking..." }, { quoted: m });
+
+    // Replace with your AI function / API call
+    const aiResponse = await getAIResponse(userMessage); // Example: { text }
+
+    if (!aiResponse) {
+      return await socket.sendMessage(m.chat, { text: "❌ AI did not respond!" }, { quoted: m });
+    }
+
+    const aiButtons = [
+      { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📂 MENU" }, type: 1 },
+      { buttonId: `${config.PREFIX}alive`, buttonText: { displayText: "🟢 ALIVE" }, type: 1 },
+      { buttonId: `${config.PREFIX}ping`, buttonText: { displayText: "🏓 PING" }, type: 1 }
+    ];
+
+    await socket.sendMessage(m.chat, {
+      text: `💬 *You:* ${userMessage}\n\n🤖 *AI:* ${aiResponse.text}`,
+      buttons: aiButtons,
+      footer: "© RAVIYA MD",
+      headerType: 1
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("AI error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to get AI response!" }, { quoted: m });
+  }
+  break;
+			  }
+					case 'aiimg': {
+  try {
+    if (!args || args.length === 0) {
+      return await socket.sendMessage(m.chat, {
+        text: "❌ Please provide a prompt to generate an AI image!\nExample: .aiimg a futuristic city at sunset"
+      }, { quoted: m });
+    }
+
+    const prompt = args.join(" ");
+    await socket.sendMessage(m.chat, { text: "🎨 Generating AI image..." }, { quoted: m });
+
+    // Replace with your AI image generation function / API call
+    const aiImage = await generateAIImage(prompt); // { url: "image_url" }
+
+    if (!aiImage || !aiImage.url) {
+      return await socket.sendMessage(m.chat, { text: "❌ Failed to generate AI image!" }, { quoted: m });
+    }
+
+    const aiImageButtons = [
+      { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📂 MENU" }, type: 1 },
+      { buttonId: `${config.PREFIX}alive`, buttonText: { displayText: "🟢 ALIVE" }, type: 1 }
+    ];
+
+    await socket.sendMessage(m.chat, {
+      image: { url: aiImage.url },
+      caption: `🎨 *AI Image Generated!*\nPrompt: ${prompt}`,
+      footer: "© RAVIYA MD",
+      buttons: aiImageButtons,
+      headerType: 4
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("AI Image error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to generate AI image!" }, { quoted: m });
+  }
+  break;
+}
+					case 'chatgpt': {
+  try {
+    if (!args || args.length === 0) {
+      return await socket.sendMessage(m.chat, {
+        text: "❌ Please provide a message for ChatGPT!\nExample: .chatgpt Explain quantum physics in simple terms."
+      }, { quoted: m });
+    }
+
+    const userMessage = args.join(" ");
+    await socket.sendMessage(m.chat, { text: "🤖 Asking ChatGPT..." }, { quoted: m });
+
+    // Replace with your ChatGPT function / API call
+    const gptResponse = await getChatGPTResponse(userMessage); // { text }
+
+    if (!gptResponse) {
+      return await socket.sendMessage(m.chat, { text: "❌ ChatGPT did not respond!" }, { quoted: m });
+    }
+
+    const gptButtons = [
+      { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📂 MENU" }, type: 1 },
+      { buttonId: `${config.PREFIX}alive`, buttonText: { displayText: "🟢 ALIVE" }, type: 1 },
+      { buttonId: `${config.PREFIX}ping`, buttonText: { displayText: "🏓 PING" }, type: 1 }
+    ];
+
+    await socket.sendMessage(m.chat, {
+      text: `💬 *You:* ${userMessage}\n\n🤖 *ChatGPT:* ${gptResponse.text}`,
+      buttons: gptButtons,
+      footer: "© RAVIYA MD",
+      headerType: 1
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("ChatGPT error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to get response from ChatGPT!" }, { quoted: m });
+  }
+  break;
+}
+					case 'add': {
+  try {
+    if (!m.isGroup) {
+      return await socket.sendMessage(m.chat, { text: "❌ This command can only be used in a group!" }, { quoted: m });
+    }
+
+    if (!args || args.length === 0) {
+      return await socket.sendMessage(m.chat, { text: "❌ Please provide the phone number to add!\nExample: .add 947XXXXXXXX" }, { quoted: m });
+    }
+
+    let number = args[0].replace(/[^0-9]/g, '') + "@s.whatsapp.net";
+
+    await socket.groupAdd(m.chat, [number]);
+
+    await socket.sendMessage(m.chat, {
+      text: `✅ Successfully added @${number.split("@")[0]} to the group!`,
+      mentions: [number],
+      buttons: [
+        { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📂 MENU" }, type: 1 },
+        { buttonId: `${config.PREFIX}alive`, buttonText: { displayText: "🟢 ALIVE" }, type: 1 }
+      ],
+      footer: "© RAVIYA MD",
+      headerType: 1
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("Add user error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to add user! Make sure the number is correct and I have admin permissions." }, { quoted: m });
+  }
+  break;
+			}
+					case 'kick': {
+  try {
+    if (!m.isGroup) {
+      return await socket.sendMessage(m.chat, { text: "❌ This command can only be used in a group!" }, { quoted: m });
+    }
+
+    if (!m.mentionedJid || m.mentionedJid.length === 0) {
+      return await socket.sendMessage(m.chat, { text: "❌ Please mention the user(s) to kick!" }, { quoted: m });
+    }
+
+    for (let user of m.mentionedJid) {
+      await socket.groupParticipantsUpdate(m.chat, [user], "remove");
+    }
+
+    const mentions = m.mentionedJid;
+    await socket.sendMessage(m.chat, {
+      text: `✅ Successfully removed ${mentions.map(u => '@' + u.split("@")[0]).join(", ")} from the group!`,
+      mentions: mentions,
+      buttons: [
+        { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📂 MENU" }, type: 1 },
+        { buttonId: `${config.PREFIX}alive`, buttonText: { displayText: "🟢 ALIVE" }, type: 1 }
+      ],
+      footer: "© RAVIYA MD",
+      headerType: 1
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("Kick error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to remove user(s)! Make sure I have admin permissions." }, { quoted: m });
+  }
+  break;
+					}
+
+					case 'promote': {
+  try {
+    if (!m.isGroup) {
+      return await socket.sendMessage(m.chat, { text: "❌ This command can only be used in a group!" }, { quoted: m });
+    }
+
+    if (!m.mentionedJid || m.mentionedJid.length === 0) {
+      return await socket.sendMessage(m.chat, { text: "❌ Please mention the user(s) to promote!" }, { quoted: m });
+    }
+
+    for (let user of m.mentionedJid) {
+      await socket.groupParticipantsUpdate(m.chat, [user], "promote");
+    }
+
+    const mentions = m.mentionedJid;
+    await socket.sendMessage(m.chat, {
+      text: `✅ Successfully promoted ${mentions.map(u => '@' + u.split("@")[0]).join(", ")} to admin!`,
+      mentions: mentions,
+      buttons: [
+        { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📂 MENU" }, type: 1 },
+        { buttonId: `${config.PREFIX}alive`, buttonText: { displayText: "🟢 ALIVE" }, type: 1 }
+      ],
+      footer: "© RAVIYA MD",
+      headerType: 1
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("Promote error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to promote user(s)! Make sure I have admin permissions." }, { quoted: m });
+  }
+  break;
+					}
+					case 'demote': {
+  try {
+    if (!m.isGroup) {
+      return await socket.sendMessage(m.chat, { text: "❌ This command can only be used in a group!" }, { quoted: m });
+    }
+
+    if (!m.mentionedJid || m.mentionedJid.length === 0) {
+      return await socket.sendMessage(m.chat, { text: "❌ Please mention the admin(s) to demote!" }, { quoted: m });
+    }
+
+    for (let user of m.mentionedJid) {
+      await socket.groupParticipantsUpdate(m.chat, [user], "demote");
+    }
+
+    const mentions = m.mentionedJid;
+    await socket.sendMessage(m.chat, {
+      text: `✅ Successfully demoted ${mentions.map(u => '@' + u.split("@")[0]).join(", ")} from admin!`,
+      mentions: mentions,
+      buttons: [
+        { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📂 MENU" }, type: 1 },
+        { buttonId: `${config.PREFIX}alive`, buttonText: { displayText: "🟢 ALIVE" }, type: 1 }
+      ],
+      footer: "© RAVIYA MD",
+      headerType: 1
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("Demote error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to demote admin(s)! Make sure I have admin permissions." }, { quoted: m });
+  }
+  break;
+			  }
+					case 'tagall': {
+  try {
+    if (!m.isGroup) {
+      return await socket.sendMessage(m.chat, { text: "❌ This command can only be used in a group!" }, { quoted: m });
+    }
+
+    const participants = m.chatMetadata.participants || [];
+    const mentions = participants.map(p => p.id);
+
+    if (mentions.length === 0) {
+      return await socket.sendMessage(m.chat, { text: "❌ No participants found to tag!" }, { quoted: m });
+    }
+
+    const tagMessage = `
+🌟🌈 *ATTENTION EVERYONE!* 🌈🌟
+
+Hey everyone! @${mentions.map(u => u.split("@")[0]).join(", @")}
+
+⚡ *Message from admin:* Don't miss any updates!
+`;
+
+    await socket.sendMessage(m.chat, {
+      text: tagMessage,
+      mentions: mentions,
+      buttons: [
+        { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📂 MENU" }, type: 1 },
+        { buttonId: `${config.PREFIX}alive`, buttonText: { displayText: "🟢 ALIVE" }, type: 1 }
+      ],
+      footer: "© RAVIYA MD",
+      headerType: 1
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("TagAll error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to tag all members!" }, { quoted: m });
+  }
+  break;
+			}
+					case 'open': {
+  try {
+    if (!m.isGroup) {
+      return await socket.sendMessage(m.chat, { text: "❌ This command can only be used in a group!" }, { quoted: m });
+    }
+
+    // Open the group (allow all participants to send messages)
+    await socket.groupSettingUpdate(m.chat, "not_announcement");
+
+    await socket.sendMessage(m.chat, {
+      text: `
+🌟✨ *GROUP OPENED!* ✨🌟
+
+🎉 The group is now open! Everyone can send messages.
+⚡ Stay active and enjoy the conversation! 💬
+`,
+      buttons: [
+        { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📂 MENU" }, type: 1 },
+        { buttonId: `${config.PREFIX}alive`, buttonText: { displayText: "🟢 ALIVE" }, type: 1 }
+      ],
+      footer: "© RAVIYA MD",
+      headerType: 1
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("Open group error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to open the group! Make sure I have admin permissions." }, { quoted: m });
+  }
+  break;
+					}
+					case 'close': {
+  try {
+    if (!m.isGroup) {
+      return await socket.sendMessage(m.chat, { text: "❌ This command can only be used in a group!" }, { quoted: m });
+    }
+
+    // Close the group (only admins can send messages)
+    await socket.groupSettingUpdate(m.chat, "announcement");
+
+    await socket.sendMessage(m.chat, {
+      text: `
+🚫🔒 *GROUP CLOSED!* 🔒🚫
+
+⚡ Only admins can send messages now.
+🎯 Keep the group organized and on topic! 📌
+`,
+      buttons: [
+        { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📂 MENU" }, type: 1 },
+        { buttonId: `${config.PREFIX}alive`, buttonText: { displayText: "🟢 ALIVE" }, type: 1 }
+      ],
+      footer: "© RAVIYA MD",
+      headerType: 1
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("Close group error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to close the group! Make sure I have admin permissions." }, { quoted: m });
+  }
+  break;
+			}
+					case 'news': {
+  try {
+    await socket.sendMessage(m.chat, { text: "📰 Fetching latest news..." }, { quoted: m });
+
+    // Replace this with your actual news fetching function/API
+    const newsList = await getLatestNews(); // Example: [{ title, url }, ...]
+
+    if (!newsList || newsList.length === 0) {
+      return await socket.sendMessage(m.chat, { text: "❌ No news found!" }, { quoted: m });
+    }
+
+    let newsText = "📰 *LATEST NEWS HEADLINES*\n\n";
+    newsList.slice(0, 10).forEach((item, index) => {
+      newsText += `*${index + 1}.* ${item.title}\n🔗 ${item.url}\n\n`;
+    });
+
+    await socket.sendMessage(m.chat, {
+      text: newsText,
+      buttons: [
+        { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📂 MENU" }, type: 1 },
+        { buttonId: `${config.PREFIX}alive`, buttonText: { displayText: "🟢 ALIVE" }, type: 1 }
+      ],
+      footer: "© RAVIYA MD",
+      headerType: 1
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("News error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to fetch news!" }, { quoted: m });
+  }
+  break;
+		 }
+					case 'cricket': {
+  try {
+    await socket.sendMessage(m.chat, { text: "🏏 Fetching latest cricket scores..." }, { quoted: m });
+
+    // Replace with your actual cricket API function
+    const cricketData = await getCricketScores(); 
+    /* Example return:
+      [
+        { match: "Team A vs Team B", score: "250/6", status: "Team A won by 4 wickets" },
+        ...
+      ]
+    */
+
+    if (!cricketData || cricketData.length === 0) {
+      return await socket.sendMessage(m.chat, { text: "❌ No cricket data found!" }, { quoted: m });
+    }
+
+    let cricketText = "🏏 *LATEST CRICKET SCORES*\n\n";
+    cricketData.slice(0, 5).forEach((match, index) => {
+      cricketText += `*${index + 1}.* ${match.match}\nScore: ${match.score}\nStatus: ${match.status}\n\n`;
+    });
+
+    await socket.sendMessage(m.chat, {
+      text: cricketText,
+      buttons: [
+        { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📂 MENU" }, type: 1 },
+        { buttonId: `${config.PREFIX}alive`, buttonText: { displayText: "🟢 ALIVE" }, type: 1 }
+      ],
+      footer: "© RAVIYA MD",
+      headerType: 1
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("Cricket error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to fetch cricket scores!" }, { quoted: m });
+  }
+  break;
+		  }
+					case 'nasa': {
+  try {
+    await socket.sendMessage(m.chat, { text: "🚀 Fetching NASA's latest image..." }, { quoted: m });
+
+    // Replace with your NASA API function
+    const nasaData = await getNasaAPOD(); 
+    /* Example return:
+      {
+        title: "Galaxy NGC 123",
+        date: "2025-12-24",
+        url: "https://example.com/image.jpg",
+        explanation: "This is a beautiful galaxy captured by Hubble telescope."
+      }
+    */
+
+    if (!nasaData || !nasaData.url) {
+      return await socket.sendMessage(m.chat, { text: "❌ Failed to fetch NASA data!" }, { quoted: m });
+    }
+
+    const nasaText = `
+🌌 *NASA Astronomy Picture of the Day*
+
+📅 Date: ${nasaData.date}
+🛰 Title: ${nasaData.title}
+
+📝 Explanation: ${nasaData.explanation}
+`;
+
+    await socket.sendMessage(m.chat, {
+      image: { url: nasaData.url },
+      caption: nasaText,
+      buttons: [
+        { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📂 MENU" }, type: 1 },
+        { buttonId: `${config.PREFIX}alive`, buttonText: { displayText: "🟢 ALIVE" }, type: 1 }
+      ],
+      footer: "© RAVIYA MD",
+      headerType: 4
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("NASA error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to fetch NASA data!" }, { quoted: m });
+  }
+  break;
+					}
+					case 'joke': {
+  try {
+    await socket.sendMessage(m.chat, { text: "😂 Getting a funny Sinhala joke..." }, { quoted: m });
+
+    // Replace with your Sinhala joke source or API
+    const jokes = [
+      "ගුරුතුමිය: 'කවුද තේ පාන් කෑවා?'\nසුද: 'මමයි, ගුරුතුමිය!' 😂",
+      "අම්මයි: 'ඔයා පාසලට ගියාද?'\nසුද: 'ඔව්, අම්ම, අද මගේ බඩු විභාගයි!' 😆",
+      "පැය 2කට පෙර නිදහස් වූ දරුවා: 'මම දැන් නිදහස්!' 😂"
+    ];
+
+    const joke = jokes[Math.floor(Math.random() * jokes.length)];
+
+    await socket.sendMessage(m.chat, {
+      text: `🤣 *Sinhala Joke:*\n\n${joke}`,
+      buttons: [
+        { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📂 MENU" }, type: 1 },
+        { buttonId: `${config.PREFIX}alive`, buttonText: { displayText: "🟢 ALIVE" }, type: 1 }
+      ],
+      footer: "© RAVIYA MD",
+      headerType: 1
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("Joke error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to fetch a joke!" }, { quoted: m });
+  }
+  break;
+		}
+					case 'meme': {
+  try {
+    await socket.sendMessage(m.chat, { text: "🤣 Fetching a funny Sinhala meme..." }, { quoted: m });
+
+    // Replace with your meme API or local meme array
+    const memes = [
+      "https://i.ibb.co/0jqHpnp/sinhala-meme1.jpg",
+      "https://i.ibb.co/qFJ08v4/sinhala-meme2.jpg",
+      "https://i.ibb.co/xyz123/sinhala-meme3.jpg"
+    ];
+
+    const memeUrl = memes[Math.floor(Math.random() * memes.length)];
+
+    await socket.sendMessage(m.chat, {
+      image: { url: memeUrl },
+      caption: "😂 *Sinhala Meme*",
+      buttons: [
+        { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📂 MENU" }, type: 1 },
+        { buttonId: `${config.PREFIX}alive`, buttonText: { displayText: "🟢 ALIVE" }, type: 1 }
+      ],
+      footer: "© RAVIYA MD",
+      headerType: 4
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("Meme error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to fetch a meme!" }, { quoted: m });
+  }
+  break;
+		 }
+					case 'quote': {
+  try {
+    await socket.sendMessage(m.chat, { text: "💭 Fetching a Sinhala quote..." }, { quoted: m });
+
+    // Replace with your Sinhala quotes API or array
+    const quotes = [
+      "✨ ජීවිතේ රස විඳින්න, හැම දේම හොඳටම සිදු වෙනවා.",
+      "🌿 සතුට යනු මුදල් වලින් නොමිලේ ලැබෙන දෙයක්.",
+      "💡 අනිවාර්යයෙන් නොවේනම් පසුබැසීමෙන් පසු වැඩි ශක්තියක් ලැබේ."
+    ];
+
+    const quote = quotes[Math.floor(Math.random() * quotes.length)];
+
+    await socket.sendMessage(m.chat, {
+      text: `📝 *Sinhala Quote:*\n\n"${quote}"`,
+      buttons: [
+        { buttonId: `${config.PREFIX}menu`, buttonText: { displayText: "📂 MENU" }, type: 1 },
+        { buttonId: `${config.PREFIX}alive`, buttonText: { displayText: "🟢 ALIVE" }, type: 1 }
+      ],
+      footer: "© RAVIYA MD",
+      headerType: 1
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("Quote error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to fetch a quote!" }, { quoted: m });
+  }
+  break;
+}
 					
 
                 case 'deleteme':
@@ -1295,6 +2089,50 @@ case 'bot_stats': {
                     });
                     break;
             }
+			case 'setting': {
+  try {
+    // Example current settings (you can store per group or globally)
+    const groupSettings = settings.get(m.chat) || {
+      autorecord: false,
+      autolike: false,
+      autoview: false,
+      autoadd: false,
+      antidelete: false
+    };
+
+    // Toggle options buttons
+    const settingButtons = [
+      { buttonId: `${config.PREFIX}toggle autorecord`, buttonText: { displayText: `🎙 Auto Recording: ${groupSettings.autorecord ? "ON" : "OFF"}` }, type: 1 },
+      { buttonId: `${config.PREFIX}toggle autolike`, buttonText: { displayText: `❤️ Auto Like: ${groupSettings.autolike ? "ON" : "OFF"}` }, type: 1 },
+      { buttonId: `${config.PREFIX}toggle autoview`, buttonText: { displayText: `👀 Auto View: ${groupSettings.autoview ? "ON" : "OFF"}` }, type: 1 },
+      { buttonId: `${config.PREFIX}toggle autoadd`, buttonText: { displayText: `➕ Auto Add: ${groupSettings.autoadd ? "ON" : "OFF"}` }, type: 1 },
+      { buttonId: `${config.PREFIX}toggle antidelete`, buttonText: { displayText: `🛡 Anti Delete: ${groupSettings.antidelete ? "ON" : "OFF"}` }, type: 1 }
+    ];
+
+    await socket.sendMessage(m.chat, {
+      text: `
+⚙️ *RAVIYA MD SETTINGS*
+
+Current Settings Status:
+🎙 Auto Recording : ${groupSettings.autorecord ? "✅ ON" : "❌ OFF"}
+❤️ Auto Like      : ${groupSettings.autolike ? "✅ ON" : "❌ OFF"}
+👀 Auto View      : ${groupSettings.autoview ? "✅ ON" : "❌ OFF"}
+➕ Auto Add        : ${groupSettings.autoadd ? "✅ ON" : "❌ OFF"}
+🛡 Anti Delete     : ${groupSettings.antidelete ? "✅ ON" : "❌ OFF"}
+
+Select a setting below to toggle:
+`,
+      buttons: settingButtons,
+      footer: "© RAVIYA MD",
+      headerType: 1
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("Settings error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to fetch settings!" }, { quoted: m });
+  }
+  break;
+			}
         } catch (error) {
             console.error('Command handler error:', error);
             await socket.sendMessage(sender, {
