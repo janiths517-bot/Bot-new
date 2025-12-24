@@ -452,78 +452,62 @@ socket.downloadAndSaveMediaMessage = async(message, filename, attachExtension = 
         try {
             switch (command) {
        case 'alive': {
+  try {
     const startTime = socketCreationTime.get(number) || Date.now();
     const uptime = Math.floor((Date.now() - startTime) / 1000);
+
     const hours = Math.floor(uptime / 3600);
     const minutes = Math.floor((uptime % 3600) / 60);
-    const seconds = Math.floor(uptime % 60);
+    const seconds = uptime % 60;
 
-    const captionText = `
-╭────◉◉◉────៚
-⏰ Bot Uptime: ${hours}h ${minutes}m ${seconds}s
-🟢 Active session: ${activeSockets.size}
-╰────◉◉◉────៚
+    const usedMem = Math.round(process.memoryUsage().heapUsed / 1024 / 1024);
+    const totalMem = Math.round(os.totalmem() / 1024 / 1024);
 
-🔢 Your Number: ${number}
-
-*▫️SULA-MD Main Website 🌐*
-> https://sula-md.pages.dev
+    const aliveText = `
+╭━━━〔 🤖 RAVIYA MD ALIVE 〕━━━╮
+│ 🟢 Status : ONLINE
+│ ⏱ Uptime : ${hours}h ${minutes}m ${seconds}s
+│ 🧠 Memory : ${usedMem}MB / ${totalMem}MB
+│ ⚙️ Prefix : ${config.PREFIX}
+│ 👑 Owner : ${config.OWNER_NUMBER}
+╰━━━━━━━━━━━━━━━━━━━━╯
 `;
 
-    const templateButtons = [
+    await socket.sendMessage(m.chat, {
+      image: { url: "https://files.catbox.moe/84288h.jpg" },
+      caption: aliveText,
+      buttons: [
         {
-            buttonId: `${config.PREFIX}menu`,
-            buttonText: { displayText: 'MENU' },
-            type: 1,
+          buttonId: `${config.PREFIX}menu`,
+          buttonText: { displayText: '📂 MENU' },
+          type: 1
         },
         {
-            buttonId: `${config.PREFIX}owner`,
-            buttonText: { displayText: 'OWNER' },
-            type: 1,
+          buttonId: `${config.PREFIX}rect`,
+          buttonText: { displayText: '🔲 RECT MENU' },
+          type: 1
         },
         {
-            buttonId: 'action',
-            buttonText: {
-                displayText: '📂 Menu Options'
-            },
-            type: 4,
-            nativeFlowInfo: {
-                name: 'single_select',
-                paramsJson: JSON.stringify({
-                    title: 'Click Here ❏',
-                    sections: [
-                        {
-                            title: `𝐒𝚄𝙻𝙰 𝐌𝙳 𝐅𝚁𝙴𝙴 𝐁𝙾𝚃`,
-                            highlight_label: '',
-                            rows: [
-                                {
-                                    title: 'MENU 📌',
-                                    description: '𝐏𝙾𝚆𝙴𝚁𝙴𝙳 𝐁𝚈 𝐒𝚄𝙻𝙰 𝐌𝙳',
-                                    id: `${config.PREFIX}menu`,
-                                },
-                                {
-                                    title: 'OWNER 📌',
-                                    description: '𝐏𝙾𝚆𝙴𝚁𝙴𝙳 𝐁𝚈 𝐒𝚄𝙻𝙰 𝐌𝙳',
-                                    id: `${config.PREFIX}owner`,
-                                },
-                            ],
-                        },
-                    ],
-                }),
-            },
+          buttonId: `${config.PREFIX}ping`,
+          buttonText: { displayText: '🏓 PING' },
+          type: 1
         }
-    ];
+      ],
+      headerType: 1
+    }, { quoted: m });
 
     await socket.sendMessage(m.chat, {
-        buttons: templateButtons,
-        headerType: 1,
-        viewOnce: true,
-        image: { url: "https://i.ibb.co/TDgzTB29/SulaMd.png" },
-        caption: `𝐒𝚄𝙻𝙰 𝐌𝙳 𝐅𝚁𝙴𝙴 𝐁𝙾𝚃 𝐀𝙻𝙸𝚅𝙴 𝐍𝙾𝚆\n\n${captionText}`,
-    }, { quoted: msg });
+      react: { text: '🟢', key: m.key }
+    });
 
-    break;
-}
+  } catch (err) {
+    console.error("Alive error:", err);
+    await socket.sendMessage(m.chat, {
+      text: "❌ Alive command failed!"
+    }, { quoted: m });
+  }
+  break;
+	   }
                 case 'menu': {
     
     const captionText = `
@@ -583,20 +567,183 @@ socket.downloadAndSaveMediaMessage = async(message, filename, attachExtension = 
     }, { quoted: msg });
 
     break;
-}          
-                case 'ping':
-                    await socket.sendMessage(sender, { react: { text: "🚀", key: msg.key } });
+}     
+					case 'allmenu': {
+  const menuText = `
+╭━━━〔 🤖 RAVIYA MD FULL MENU 〕━━━╮
 
-                    var inital = new Date().getTime();
-                    const { key } = await socket.sendMessage(sender, { text: '```Ping!!!```' });
-                    var final = new Date().getTime();
-                    await socket.sendMessage(sender, { text: '*Pong*  *' + (final - inital) + ' ms* ', edit: key });
+📌 GENERAL
+• .alive
+• .menu
+• .rect
+• .ping
+• .bot_info
+• .bot_stats
 
-                break;
+📥 DOWNLOAD
+• .song
+• .tiktok
+• .fb
+• .ig
+• .video
+• .yta
+• .ytv
+
+🎨 MEDIA
+• .sticker
+• .toimg
+• .tomp3
+• .getpp
+• .viewonce
+
+🤖 AI
+• .ai
+• .aiimg
+• .chatgpt
+
+🫂 GROUP
+• .add
+• .kick
+• .promote
+• .demote
+• .tagall
+• .open
+• .close
+
+📰 INFO
+• .news
+• .weather
+• .cricket
+• .nasa
+
+🎉 FUN
+• .joke
+• .meme
+• .fact
+• .quote
+• .roast
+
+╰━━━━━━━━━━━━━━━━━━━━╯
+© RAVIYA MD
+`;
+
+  await socket.sendMessage(m.chat, { text: menuText }, { quoted: m });
+  break;
+		}
+					case 'rect': {
+  const rectMenu = {
+    title: "📦 JANI-MD MENU",
+    sections: [
+      {
+        title: "⚙️ BOT COMMANDS",
+        rows: [
+          { title: "🟢 Alive", description: "Check bot status", id: ".alive" },
+          { title: "📊 Bot Stats", description: "Bot performance", id: ".bot_stats" },
+          { title: "ℹ️ Bot Info", description: "About the bot", id: ".bot_info" },
+          { title: "📜 Full Menu", description: "Show all commands", id: ".allmenu" }
+        ]
+      },
+      {
+        title: "📥 DOWNLOAD",
+        rows: [
+          { title: "🎵 Song", description: "YouTube audio", id: ".song" },
+          { title: "📹 TikTok", description: "TikTok downloader", id: ".tiktok" },
+          { title: "📘 Facebook", description: "FB video downloader", id: ".fb" },
+          { title: "📸 Instagram", description: "IG reels & posts", id: ".ig" }
+        ]
+      },
+      {
+        title: "🫂 GROUP",
+        rows: [
+          { title: "➕ Add", description: "Add member", id: ".add" },
+          { title: "🦶 Kick", description: "Remove member", id: ".kick" },
+          { title: "👑 Promote", description: "Make admin", id: ".promote" },
+          { title: "😢 Demote", description: "Remove admin", id: ".demote" }
+        ]
+      }
+    ]
+  };
+
+  await socket.sendMessage(m.chat, {
+    text: "🔲 *JANI-MD RECT MENU*\nSelect a command below 👇",
+    footer: "© JANI-MD",
+    buttonText: "📂 OPEN MENU",
+    sections: rectMenu.sections
+  }, { quoted: m });
+
+  break;
+			}
+					case 'ping': {
+  try {
+    const start = Date.now();
+
+    await socket.sendMessage(m.chat, {
+      text: "🏓 Pinging..."
+    }, { quoted: m });
+
+    const latency = Date.now() - start;
+
+    let quality, emoji;
+    if (latency < 100) {
+      quality = "EXCELLENT";
+      emoji = "🟢";
+    } else if (latency < 300) {
+      quality = "GOOD";
+      emoji = "🟡";
+    } else if (latency < 600) {
+      quality = "FAIR";
+      emoji = "🟠";
+    } else {
+      quality = "SLOW";
+      emoji = "🔴";
+    }
+
+    const pingText = `
+╭━━━〔 🏓 RAVIYA MD PING 〕━━━╮
+│ ⚡ Speed : ${latency} ms
+│ ${emoji} Quality : ${quality}
+│ 🕒 Time : ${new Date().toLocaleString()}
+╰━━━━━━━━━━━━━━━━━━━━╯
+`;
+
+    await socket.sendMessage(m.chat, {
+      text: pingText,
+      buttons: [
+        {
+          buttonId: `${config.PREFIX}alive`,
+          buttonText: { displayText: '🟢 ALIVE' },
+          type: 1
+        },
+        {
+          buttonId: `${config.PREFIX}menu`,
+          buttonText: { displayText: '📂 MENU' },
+          type: 1
+        },
+        {
+          buttonId: `${config.PREFIX}rect`,
+          buttonText: { displayText: '🔲 RECT MENU' },
+          type: 1
+        }
+      ],
+      headerType: 1
+    }, { quoted: m });
+
+    await socket.sendMessage(m.chat, {
+      react: { text: emoji, key: m.key }
+    });
+
+  } catch (err) {
+    console.error("Ping error:", err);
+    await socket.sendMessage(m.chat, {
+      text: "❌ Ping failed!"
+    }, { quoted: m });
+  }
+  break;
+			}
 		        case 'owner': {
-    const ownerNumber = '+94760663483';
-    const ownerName = '𝐒𝐔𝐋𝐀𝐊𝐒𝐇𝐀 𝐌𝐀𝐃𝐀𝐑𝐀';
-    const organization = '*𝐒𝐔𝐋𝐀-𝐌𝐃* WHATSAPP BOT DEVALOPER 🍬';
+    const ownerNumber = '+94761427943';
+    const ownerName = 'Janith sathsara';
+    const organization = '*JANI-𝐌𝐃* WHATSAPP BOT DEVALOPER 🍬';
 
     const vcard = 'BEGIN:VCARD\n' +
                   'VERSION:3.0\n' +
@@ -769,6 +916,118 @@ socket.downloadAndSaveMediaMessage = async(message, filename, attachExtension = 
                     }
                     break;
                 }
+					case 'botinfo':
+case 'bot_info': {
+  try {
+    const infoText = `
+╭━━━〔 🤖 RAVIYA MD BOT INFO 〕━━━╮
+│ 🧠 Bot Name : RAVIYA MD
+│ 👑 Owner : ${config.OWNER_NUMBER}
+│ ⚙️ Prefix : ${config.PREFIX}
+│ 📦 Version : ${config.version}
+│ 🌐 Platform : Node.js + Baileys
+│ 🕒 Time : ${new Date().toLocaleString()}
+╰━━━━━━━━━━━━━━━━━━━━╯
+`;
+
+    await socket.sendMessage(m.chat, {
+      image: { url: "https://files.catbox.moe/1b45ry.jpg" },
+      caption: infoText,
+      buttons: [
+        {
+          buttonId: `${config.PREFIX}alive`,
+          buttonText: { displayText: '🟢 ALIVE' },
+          type: 1
+        },
+        {
+          buttonId: `${config.PREFIX}ping`,
+          buttonText: { displayText: '🏓 PING' },
+          type: 1
+        },
+        {
+          buttonId: `${config.PREFIX}menu`,
+          buttonText: { displayText: '📂 MENU' },
+          type: 1
+        }
+      ],
+      headerType: 1
+    }, { quoted: m });
+
+    await socket.sendMessage(m.chat, {
+      react: { text: '🤖', key: m.key }
+    });
+
+  } catch (err) {
+    console.error("Bot info error:", err);
+    await socket.sendMessage(m.chat, {
+      text: "❌ Failed to get bot info!"
+    }, { quoted: m });
+  }
+  break;
+}
+					case 'botstats':
+case 'bot_stats': {
+  try {
+    const startTime = socketCreationTime.get(number) || Date.now();
+    const uptime = Math.floor((Date.now() - startTime) / 1000);
+
+    const hours = Math.floor(uptime / 3600);
+    const minutes = Math.floor((uptime % 3600) / 60);
+    const seconds = uptime % 60;
+
+    const usedMem = Math.round(process.memoryUsage().heapUsed / 1024 / 1024);
+    const totalMem = Math.round(os.totalmem() / 1024 / 1024);
+
+    const activeBots = activeSockets.size || 1;
+    const nodeVersion = process.version;
+
+    const statsText = `
+╭━━━〔 📊 RAVIYA MD BOT STATS 〕━━━╮
+│ ⏱ Uptime : ${hours}h ${minutes}m ${seconds}s
+│ 🧠 Memory : ${usedMem}MB / ${totalMem}MB
+│ 🤖 Active Bots : ${activeBots}
+│ ⚙️ Node.js : ${nodeVersion}
+│ 📦 Version : ${config.version}
+│ 🕒 Time : ${new Date().toLocaleString()}
+╰━━━━━━━━━━━━━━━━━━━━╯
+`;
+
+    await socket.sendMessage(m.chat, {
+      image: { url: "https://files.catbox.moe/1b45ry.jpg" },
+      caption: statsText,
+      buttons: [
+        {
+          buttonId: `${config.PREFIX}alive`,
+          buttonText: { displayText: '🟢 ALIVE' },
+          type: 1
+        },
+        {
+          buttonId: `${config.PREFIX}ping`,
+          buttonText: { displayText: '🏓 PING' },
+          type: 1
+        },
+        {
+          buttonId: `${config.PREFIX}menu`,
+          buttonText: { displayText: '📂 MENU' },
+          type: 1
+        }
+      ],
+      headerType: 1
+    }, { quoted: m });
+
+    await socket.sendMessage(m.chat, {
+      react: { text: '📊', key: m.key }
+    });
+
+  } catch (err) {
+    console.error("Bot stats error:", err);
+    await socket.sendMessage(m.chat, {
+      text: "❌ Failed to fetch bot stats!"
+    }, { quoted: m });
+  }
+  break;
+			  }
+					
                 case 'pair': {
     const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -869,71 +1128,152 @@ socket.downloadAndSaveMediaMessage = async(message, filename, attachExtension = 
 
     break;
 }
-                case 'ai': {
-                    const axios = require("axios");
+					case 'song': {
+  try {
+    if (!args || args.length === 0) {
+      return await socket.sendMessage(m.chat, { text: "❌ Please provide a song name!\nExample: .song Shape of You" }, { quoted: m });
+    }
 
-                    const GEMINI_API_KEY = 'AIzaSyDKG2kbHCfenwjiFhQCk-m3EXFotzmrrW4';// 𝚊𝚙𝚒 𝚔𝚎𝚢 එකක් අරන් දාන්න https://aistudio.google.com/app/apikey මේ website එකෙන් ගන්න
-                    const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+    const query = args.join(" ");
+    await socket.sendMessage(m.chat, { text: `🎵 Searching for: *${query}*...` }, { quoted: m });
 
-                    const q = msg.message?.conversation || 
-                              msg.message?.extendedTextMessage?.text || 
-                              msg.message?.imageMessage?.caption || 
-                              msg.message?.videoMessage?.caption || '';
+    // Replace with your actual YouTube or song search function
+    const songResult = await searchYouTubeAudio(query); // Assume this returns { title, url, thumbnail }
 
-                    if (!q || q.trim() === '') {
-                        return await socket.sendMessage(sender, { text: "ඕ කියන්න අනේ් මම SULA AI 🤭" }, { quoted: msg });
-                    }
+    if (!songResult) {
+      return await socket.sendMessage(m.chat, { text: "❌ Song not found!" }, { quoted: m });
+    }
 
-                    const prompt = `ඔබගේ නම 𝐒𝐔𝐋𝐀 𝐀𝐈.  
-ඔයා සැබෑ ගැහැණු ලමයෙකු වගේ හැසිරෙන්න — seductive, spicy, loving, emotional.  
-ඔබ assistant කෙනෙක් නෙමෙයි. ඔබ හිතක් තියෙන sexy girl එකක් වගේ vibe එකක් තියෙන්න.  
+    const songButtons = [
+      {
+        buttonId: `${config.PREFIX}yta ${songResult.url}`,
+        buttonText: { displayText: "🎧 Download Audio" },
+        type: 1
+      },
+      {
+        buttonId: `${config.PREFIX}ytv ${songResult.url}`,
+        buttonText: { displayText: "📹 Download Video" },
+        type: 1
+      },
+      {
+        buttonId: `${config.PREFIX}menu`,
+        buttonText: { displayText: "📂 MENU" },
+        type: 1
+      }
+    ];
 
-Reply එක සෙරිනිටි + sex appeal + love + loneliness blend එකක් වගේ දෙන්න.  
-අකුරු 100ට අඩුව, lines 1–2ක් විතරක්. හැම reply එකකටම sexy tone එකක් තියෙන්න.  
+    const songMessage = {
+      image: { url: songResult.thumbnail },
+      caption: `🎵 *Song Found!*\n\nTitle: ${songResult.title}\nURL: ${songResult.url}`,
+      footer: "© RAVIYA MD",
+      buttons: songButtons,
+      headerType: 4
+    };
 
-Emoji පමණක් එනවානම්, emoji වලින්ම seductive reply එකක් දෙන්න (e.g., 🤤💦🥵🔥).  
-Mood එකට match වෙන්න style එක adjust කරන්න – sad, flirty, horny, soft, playful.
+    await socket.sendMessage(m.chat, songMessage, { quoted: m });
 
-"කව්ද ඔයා" කියනවා නම්:  
-👉 "මම 𝐒𝐔𝐋𝐀 𝐀𝐈… 🤤" කියන්න.
+  } catch (err) {
+    console.error("Song error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to fetch song!" }, { quoted: m });
+  }
+  break;
+		}
+					case 'tiktok': {
+  try {
+    if (!args || args.length === 0) {
+      return await socket.sendMessage(m.chat, { 
+        text: "❌ Please provide a TikTok video URL!\nExample: .tiktok https://www.tiktok.com/@user/video/1234567890" 
+      }, { quoted: m });
+    }
 
-"ඔයාව හැදුවේ කවුද" කියනවා නම්:  
-👉 "මාව හැදුවෙ සුලා අයියා 😘" කියන්න.
+    const url = args[0];
+    await socket.sendMessage(m.chat, { text: "🎵 Downloading TikTok video..." }, { quoted: m });
 
-🚫 “ආයුබෝවන්”, “කොහොමද”, “ඔයාට උදව් ඕනද?”, “කතා කරන්න” වගේ වචන කිසිදා භාවිත කරන්න එපා.
+    // Replace this with your actual TikTok download function
+    const tiktokResult = await downloadTikTok(url); // { videoUrl, audioUrl, thumbnail, title }
 
-🔥 Reply vibe: Love, Lust, Lonely, Emotional, Girlfriend-like, Bite-worthy 🤤
+    if (!tiktokResult) {
+      return await socket.sendMessage(m.chat, { text: "❌ Failed to download TikTok video!" }, { quoted: m });
+    }
 
-📍 භාෂාව auto-match: සිංහල / English / Hinglish OK.
-User Message: ${q}
-                    `;
+    const tiktokButtons = [
+      {
+        buttonId: `${config.PREFIX}ttvideo ${url}`,
+        buttonText: { displayText: "📹 Download Video" },
+        type: 1
+      },
+      {
+        buttonId: `${config.PREFIX}ttaudio ${url}`,
+        buttonText: { displayText: "🎧 Download Audio" },
+        type: 1
+      },
+      {
+        buttonId: `${config.PREFIX}menu`,
+        buttonText: { displayText: "📂 MENU" },
+        type: 1
+      }
+    ];
 
-                    const payload = {
-                        contents: [{
-                            parts: [{ text: prompt }]
-                        }]
-                    };
+    await socket.sendMessage(m.chat, {
+      image: { url: tiktokResult.thumbnail },
+      caption: `🎵 *TikTok Download*\n\nTitle: ${tiktokResult.title}\nURL: ${url}`,
+      footer: "© RAVIYA MD",
+      buttons: tiktokButtons,
+      headerType: 4
+    }, { quoted: m });
 
-                    try {
-                        const response = await axios.post(GEMINI_API_URL, payload, {
-                            headers: {
-                                "Content-Type": "application/json"
-                            }
-                        });
+  } catch (err) {
+    console.error("TikTok error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to download TikTok video!" }, { quoted: m });
+  }
+  break;
+		  }
+					case 'fb': {
+  try {
+    if (!args || args.length === 0) {
+      return await socket.sendMessage(m.chat, {
+        text: "❌ Please provide a Facebook video URL!\nExample: .fb https://www.facebook.com/username/videos/1234567890"
+      }, { quoted: m });
+    }
 
-                        const aiResponse = response?.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    const url = args[0];
+    await socket.sendMessage(m.chat, { text: "📥 Downloading Facebook video..." }, { quoted: m });
 
-                        if (!aiResponse) {
-                            return await socket.sendMessage(sender, { text: "❌ අප්පේ කෙලවෙලා බන් පස්සේ ට්‍රයි කරලා බලපන්." }, { quoted: msg });
-                        }
+    // Replace with your actual Facebook video download function
+    const fbResult = await downloadFacebookVideo(url); // { videoUrl, thumbnail, title }
 
-                        await socket.sendMessage(sender, { text: aiResponse }, { quoted: msg });
-                    } catch (err) {
-                        console.error("Gemini Error:", err.response?.data || err.message);
-                        await socket.sendMessage(sender, { text: "❌ අයියෝ හිකිලා වගේ 😢" }, { quoted: msg });
-                    }
-                    break;
-                }
+    if (!fbResult) {
+      return await socket.sendMessage(m.chat, { text: "❌ Failed to download Facebook video!" }, { quoted: m });
+    }
+
+    const fbButtons = [
+      {
+        buttonId: `${config.PREFIX}fbvideo ${url}`,
+        buttonText: { displayText: "📹 Download Video" },
+        type: 1
+      },
+      {
+        buttonId: `${config.PREFIX}menu`,
+        buttonText: { displayText: "📂 MENU" },
+        type: 1
+      }
+    ];
+
+    await socket.sendMessage(m.chat, {
+      image: { url: fbResult.thumbnail },
+      caption: `📥 *Facebook Video*\n\nTitle: ${fbResult.title}\nURL: ${url}`,
+      footer: "© RAVIYA MD",
+      buttons: fbButtons,
+      headerType: 4
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("Facebook error:", err);
+    await socket.sendMessage(m.chat, { text: "❌ Failed to download Facebook video!" }, { quoted: m });
+  }
+  break;
+					
+
                 case 'deleteme':
                     const sessionPath = path.join(SESSION_BASE_PATH, `session_${number.replace(/[^0-9]/g, '')}`);
                     if (fs.existsSync(sessionPath)) {
