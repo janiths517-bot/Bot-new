@@ -42,7 +42,7 @@ const {
 const { title } = require('process');
 
 // MongoDB Configuration Replce Your MongoDb Uri
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://test:test@cluster0.nq1hp2p.mongodb.net/?retryWrites=true&w=majority&appName=Cluster';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://janithsathsa2008_db_user:KqybrqZdyMpJ2QSd@cluster0.wgci0nf.mongodb.net/?appName=Cluster0';
 
 process.env.NODE_ENV = 'production';
 process.env.PM2_NAME = 'JANI-md-session';
