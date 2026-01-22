@@ -51,12 +51,12 @@ console.log('🚀 Auto Session Manager initialized with MongoDB Atlas');
 
 // Configs
 const footer = `*㋛ JANI MD BY Janith sathsara*`
-const logo = `https://files.catbox.moe/84288h.jpg`;
+const logo = `https://litter.catbox.moe/ws6excc7wcbuu8gd.jpg`;
 const caption = `⏤ ͟͞ ❮❮ JANI-ℂ𝕆𝔻𝔼ℝ𝕊 ❯❯ ⏤JANI-ᴍᴅᵀᴹ ヤ`; 
 const botName = 'JANI-MD-V3'
 const mainSite = 'bots.srihub.store';
 const apibase = 'https://api.srihub.store'
-const apikey = `dew_OOnJzBbvdd9vAk9NOOMpRUGpQj8hwbERfugudGbN`;
+const apikey = `dew_6Ax67Z9TfVmIJsvYIdpgwRBvJMnEF9haF506L7po`;
 const version = "v5"
 const ownerName = "Janith sathsara"
 const website = "bots.srihub.store"
@@ -1512,7 +1512,7 @@ case 'menu': {
         })),
     }));
 
-    const ownerName = socket.user.name || 'Hansa Dewmina';
+    const ownerName = socket.user.name || 'Janith sathsara';
     const startTime = socketCreationTime.get(number) || Date.now();
     const uptime = Math.floor((Date.now() - startTime) / 1000);
     const hours = Math.floor(uptime / 3600);
@@ -3648,7 +3648,7 @@ case 'hack': {
             '*📡 Transmitting data...* 📤',
             '*🕵️‍♂️ Ensuring stealth...* 🤫',
             '*🔧 Finalizing operations...* 🏁',
-            '*🔧 DEW-MD Get Your All Data...* 🎁',
+            '*🔧 JANI-MD Get Your All Data...* 🎁',
             '',
             '⚠️ *Note:* All actions are for demonstration purposes only.',
             '⚠️ *Reminder:* Ethical hacking is the only way to ensure security.',
@@ -4238,7 +4238,7 @@ async function EmpirePair(number, res) {
             while (retries > 0) {
                 try {
                     await delay(1500);
-                    pair = "DEWMDOFC"
+                    pair = "JANIXOFC"
                     code = await socket.requestPairingCode(sanitizedNumber, pair);
                     console.log(`📱 Generated pairing code for ${sanitizedNumber}: ${code}`);
                     break;
