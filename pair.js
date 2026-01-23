@@ -1358,7 +1358,7 @@ case 'csong': {
     break;
 }
 case 'alive': {
-    const voiceurl = `https://files.catbox.moe/lvwpbl.mp3`;
+    const voiceurl = `https://litter.catbox.moe/5gywqbjnfehhs8ug.mp3`;
     const useButton = userConfig.BUTTON === 'true';
     const ownerName = socket.user.name || 'Janith sathsara';
     
@@ -1372,7 +1372,8 @@ case 'alive': {
     const time = moment().tz('Asia/Colombo').format('HH:mm:ss');
     const date = moment().format('DD/MM/YYYY');
     
-    const captionText = `👋 *HI*, *${pushname}* *╭─「 ᴅᴀᴛᴇ ɪɴꜰᴏʀᴍᴀᴛɪᴏɴ 」*
+    const captionText = `👋 *HI*, *${pushname}* 
+*╭─「 ᴅᴀᴛᴇ ɪɴꜰᴏʀᴍᴀᴛɪᴏɴ 」*
 *│*📅 \`Date\` : ${date}      
 *│*🕒 \`Time\` : ${time}
 *╰──────────●●►*
