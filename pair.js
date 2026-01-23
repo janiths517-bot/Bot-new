@@ -1358,7 +1358,7 @@ case 'csong': {
     break;
 }
 case 'alive': {
-    const voiceurl = `https://litter.catbox.moe/5gywqbjnfehhs8ug.mp3`;
+    const voiceurl = `https://files.catbox.moe/lvwpbl.mp3`;
     const useButton = userConfig.BUTTON === 'true';
     const ownerName = socket.user.name || 'Janith sathsara';
     
