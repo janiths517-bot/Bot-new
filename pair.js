@@ -1357,25 +1357,25 @@ case 'csong': {
     }
     break;
 }
-
 case 'alive': {
+    const voiceurl = `https://files.catbox.moe/lvwpbl.mp3`;
     const useButton = userConfig.BUTTON === 'true';
     const ownerName = socket.user.name || 'Janith sathsara';
+    
+    // Uptime ගණනය කිරීම
     const startTime = socketCreationTime.get(number) || Date.now();
     const uptime = Math.floor((Date.now() - startTime) / 1000);
     const hours = Math.floor(uptime / 3600);
     const minutes = Math.floor((uptime % 3600) / 60);
     const seconds = Math.floor(uptime % 60);
+    
     const time = moment().tz('Asia/Colombo').format('HH:mm:ss');
     const date = moment().format('DD/MM/YYYY');
-
-    const captionText = `👋 *HI*, *${pushname}* 
     
-*╭─「 ᴅᴀᴛᴇ ɪɴꜰᴏʀᴍᴀᴛɪᴏɴ 」*
+    const captionText = `👋 *HI*, *${pushname}* *╭─「 ᴅᴀᴛᴇ ɪɴꜰᴏʀᴍᴀᴛɪᴏɴ 」*
 *│*📅 \`Date\` : ${date}      
 *│*🕒 \`Time\` : ${time}
 *╰──────────●●►*
-
 *╭─「 ꜱᴛᴀᴛᴜꜱ ᴅᴇᴛᴀɪʟꜱ 」*
 *│*👤 \`User\` : ${pushname}
 *│*🧑‍💻 \`Owner\` : ${ownerName}
@@ -1383,71 +1383,64 @@ case 'alive': {
 *│*🧬 \`Version\` : ${version}
 *│*📟 \`Uptime\` : ${hours}h ${minutes}m ${seconds}s
 *╰──────────●●►*
-
 *╭─「 ʙᴏᴛ ᴅᴇᴘʟᴏʏ 」*
 *│*🤖 \`Deploy\` : ${website}
 *╰──────────●●►*
-
 ${footer}`;
-    // ✅ Send reaction to the user's command message
+
+    // 1. Reaction 
     await socket.sendMessage(m.chat, {
         react: {
-            text: '☣️',       // The emoji to react with
-            key: msg.key     // The message to react to
+            text: '☣️',
+            key: m.key // 
         }
     });
-    if (useButton) {
+
+    // 2.(Voice Note) 
     await socket.sendMessage(m.chat, {
-        buttons: [
-            {
-                buttonId: 'action',
-                buttonText: {
-                    displayText: '📂 Menu Options'
-                },
-                type: 4,
-                nativeFlowInfo: {
-                    name: 'single_select',
-                    paramsJson: JSON.stringify({
-                        title: 'Click Here ❏',
-                        sections: [
-                            {
-                                title: `${caption}`,
-                                highlight_label: '',
+        audio: { url: voiceurl },
+        mimetype: 'audio/mpeg',
+        ptt: true //  true  voice note 
+    }, { quoted: m });
+
+    // 3. Image & Buttons 
+    if (useButton) {
+        await socket.sendMessage(m.chat, {
+            image: { url: logo },
+            caption: captionText,
+            footer: footer,
+            buttons: [
+                {
+                    buttonId: 'action',
+                    buttonText: { displayText: '📂 Menu Options' },
+                    type: 4,
+                    nativeFlowInfo: {
+                        name: 'single_select',
+                        paramsJson: JSON.stringify({
+                            title: 'Click Here ❏',
+                            sections: [{
+                                title: 'Select an option',
                                 rows: [
-                                    {
-                                        title: 'Menu',
-                                        description: 'Get All Commands',
-                                        id: `${prefix}menu`,
-                                    },
-                                    {
-                                        title: 'Ping',
-                                        description: 'Get Bot Speed',
-                                        id: `${prefix}ping`,
-                                    },
-                                ],
-                            },
-                        ],
-                    }),
-                },
-            },
-        ],
-        headerType: 1,
-        image: { url: logo },
-        caption: `${captionText}`,
-        contextInfo: contextInfo2
-    }, { quoted: myquoted });
+                                    { title: 'Menu', description: 'Get All Commands', id: `${prefix}menu` },
+                                    { title: 'Ping', description: 'Get Bot Speed', id: `${prefix}ping` }
+                                ]
+                            }]
+                        })
+                    }
+                }
+            ],
+            headerType: 4,
+            contextInfo: typeof contextInfo2 !== 'undefined' ? contextInfo2 : {}
+        }, { quoted: m });
     } else {
-        await socket.sendMessage(m.chat, { 
-    image: { url: logo },
-    caption: captionText,
-    contextInfo: contextInfo
-},{ quoted: myquoted });
-
-}
-break;
-}
-
-
+        await socket.sendMessage(m.chat, {
+            image: { url: logo },
+            caption: captionText,
+            contextInfo: typeof contextInfo !== 'undefined' ? contextInfo : {}
+        }, { quoted: m });
+    }
+    break;
+        }                       
 // Menu Command - shows all commands in a button menu or text format - Last Update 2025-August-14
 case 'list':
 case 'pannel':
